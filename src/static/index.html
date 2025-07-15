@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Force Policy Compliance Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .chat-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            max-height: 500px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message.bot {
+            text-align: left;
+        }
+
+        .message-content {
+            display: inline-block;
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: #007bff;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 120px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .send-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+
+        .send-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sources-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .sources-section h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .source-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .source-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+        }
+
+        .source-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .source-title {
+            font-weight: 600;
+            color: #1e3c72;
+            font-size: 0.9rem;
+        }
+
+        .source-distance {
+            font-size: 0.8rem;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .source-preview {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+            margin-top: 8px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .example-queries {
+            margin-top: 20px;
+        }
+
+        .example-queries h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .example-query {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .example-query:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .chat-section, .sources-section {
+                padding: 20px;
+            }
+            
+            .input-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .send-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Air Force Policy Compliance Chatbot</h1>
+            <p>Get instant answers about DAFMAN 36-2664 Personnel Assessment Program policies and procedures</p>
+            <div id="status-indicator" class="status-indicator status-loading">
+                <div class="loading-spinner"></div>
+                Initializing system...
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="chat-section">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="message bot">
+                        <div class="message-content">
+                            Welcome! I'm your Air Force Policy Compliance Assistant. I can help you understand DAFMAN 36-2664 policies and procedures. Ask me anything about personnel assessment programs, selection boards, appeals processes, or any other related topics.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <div class="input-group">
+                        <textarea 
+                            id="user-input" 
+                            placeholder="Ask me about Air Force policies, procedures, or compliance requirements..."
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <button id="send-button" class="send-button" onclick="sendMessage()">
+                        Send
+                    </button>
+                </div>
+
+                <div class="example-queries">
+                    <h4>Example Questions:</h4>
+                    <div class="example-query" onclick="setQuery('What are the responsibilities of a selection board president?')">
+                        What are the responsibilities of a selection board president?
+                    </div>
+                    <div class="example-query" onclick="setQuery('How does the appeals process work?')">
+                        How does the appeals process work?
+                    </div>
+                    <div class="example-query" onclick="setQuery('What are the assessment scoring criteria?')">
+                        What are the assessment scoring criteria?
+                    </div>
+                    <div class="example-query" onclick="setQuery('What documentation is required for personnel assessments?')">
+                        What documentation is required for personnel assessments?
+                    </div>
+                </div>
+            </div>
+
+            <div class="sources-section">
+                <h3>📋 Source References</h3>
+                <div id="sources-container">
+                    <p style="color: #666; font-style: italic;">Source references will appear here when you ask a question.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api/chatbot';
+        let isLoading = false;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Enter key to send message
+            document.getElementById('user-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/status`);
+                const status = await response.json();
+                
+                const indicator = document.getElementById('status-indicator');
+                
+                if (status.components && status.components.vector_database && 
+                    status.components.vector_database.includes('ready')) {
+                    indicator.className = 'status-indicator status-ready';
+                    indicator.innerHTML = '✅ System Ready';
+                } else {
+                    indicator.className = 'status-indicator status-loading';
+                    indicator.innerHTML = '⚠️ System Initializing';
+                }
+            } catch (error) {
+                const indicator = document.getElementById('status-indicator');
+                indicator.className = 'status-indicator status-error';
+                indicator.innerHTML = '❌ System Error';
+            }
+        }
+
+        function setQuery(query) {
+            document.getElementById('user-input').value = query;
+            document.getElementById('user-input').focus();
+        }
+
+        async function sendMessage() {
+            if (isLoading) return;
+
+            const userInput = document.getElementById('user-input');
+            const query = userInput.value.trim();
+            
+            if (!query) return;
+
+            // Add user message to chat
+            addMessage(query, 'user');
+            
+            // Clear input and disable button
+            userInput.value = '';
+            setLoading(true);
+
+            // Add loading message
+            const loadingMessageId = addMessage('Thinking...', 'bot', true);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        n_results: 5
+                    })
+                });
+
+                const result = await response.json();
+
+                // Remove loading message
+                removeMessage(loadingMessageId);
+
+                if (result.status === 'success' || result.status === 'mock_response') {
+                    // Add bot response
+                    addMessage(result.response, 'bot');
+                    
+                    // Update sources
+                    updateSources(result.sources);
+                } else {
+                    addMessage('I apologize, but I encountered an error processing your request. Please try again.', 'bot');
+                }
+
+            } catch (error) {
+                removeMessage(loadingMessageId);
+                addMessage('I apologize, but I\'m having trouble connecting to the system. Please check your connection and try again.', 'bot');
+                console.error('Error:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function addMessage(content, sender, isLoading = false) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            
+            messageDiv.id = messageId;
+            messageDiv.className = `message ${sender}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (isLoading) {
+                contentDiv.innerHTML = '<div class="loading-spinner"></div> ' + content;
+            } else {
+                contentDiv.textContent = content;
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            messagesContainer.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return messageId;
+        }
+
+        function removeMessage(messageId) {
+            const message = document.getElementById(messageId);
+            if (message) {
+                message.remove();
+            }
+        }
+
+        function updateSources(sources) {
+            const sourcesContainer = document.getElementById('sources-container');
+            
+            if (!sources || sources.length === 0) {
+                sourcesContainer.innerHTML = '<p style="color: #666; font-style: italic;">No source references available.</p>';
+                return;
+            }
+
+            sourcesContainer.innerHTML = '';
+            
+            sources.forEach((source, index) => {
+                const sourceDiv = document.createElement('div');
+                sourceDiv.className = 'source-item';
+                
+                const similarity = Math.round((1 - source.distance) * 100);
+                
+                sourceDiv.innerHTML = `
+                    <div class="source-header">
+                        <div class="source-title">${source.source} - Chunk ${source.chunk_id}</div>
+                        <div class="source-distance">${similarity}% match</div>
+                    </div>
+                    <div class="source-preview">${source.preview}</div>
+                `;
+                
+                sourcesContainer.appendChild(sourceDiv);
+            });
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const sendButton = document.getElementById('send-button');
+            const userInput = document.getElementById('user-input');
+            
+            if (loading) {
+                sendButton.disabled = true;
+                sendButton.innerHTML = '<div class="loading-spinner"></div>';
+                userInput.disabled = true;
+            } else {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send';
+                userInput.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        // Periodically check system status
+        setInterval(checkSystemStatus, 30000); // Check every 30 seconds
+    </script>
+</body>
+</html>
+
