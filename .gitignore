@@ -1,0 +1,16 @@
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Operating System files
+.DS_Store
+.ipynb_checkpoints/
+
+# Tika server files
+tika-server.jar
+tika-server.jar.log
+
+# ChromaDB internal files (if not using LFS for all of chroma_db)
+# If you are tracking chroma_db with LFS, these might not be needed
+
