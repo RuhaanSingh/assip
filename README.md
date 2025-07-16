@@ -20,7 +20,7 @@ This chatbot implements the **advanced path** with robust document processing us
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │   Flask API     │    │   RAG Pipeline  │
-│   (HTML/CSS/JS) │◄──►│   (REST API)    │◄──►│   (Groq + DB)  │
+│   (HTML/CSS/JS) │◄──►│   (REST API)    │◄──►│   (Groq + DB)   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                 │
                                 ▼
