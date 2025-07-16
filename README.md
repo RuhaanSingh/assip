@@ -20,7 +20,7 @@ This chatbot implements the **advanced path** with robust document processing us
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │   Flask API     │    │   RAG Pipeline  │
-│   (HTML/CSS/JS) │◄──►│   (REST API)    │◄──►│   (Phi-3 + DB)  │
+│   (HTML/CSS/JS) │◄──►│   (REST API)    │◄──►│   (Groq + DB)  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                 │
                                 ▼
@@ -47,7 +47,7 @@ This chatbot implements the **advanced path** with robust document processing us
 
 ### 2. RAG Pipeline (`src/rag_pipeline.py`)
 - **Retrieval System**: ChromaDB-based semantic search
-- **Generation Model**: Phi-3 medium integration (configurable)
+- **Generation Model**: Groq API LLM 
 - **Context Formatting**: Intelligent context assembly for LLM prompts
 - **Source Citation**: Automatic source tracking and citation
 
