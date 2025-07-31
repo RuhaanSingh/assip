@@ -1,4 +1,4 @@
-# 🛡️ Air Force Policy Compliance Chatbot
+# Leveraging the Table of Contents to Improve Efficiency in an RAG-Powered Chatbot 
 
 A robust RAG-powered chatbot system designed to help Air Force personnel navigate DAFMAN 36-2664 Personnel Assessment Program policies and procedures. This system uses advanced document processing, vector search, and language models to provide accurate, traceable answers with source citations.
 
